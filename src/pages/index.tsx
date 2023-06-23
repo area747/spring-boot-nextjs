@@ -20,10 +20,3 @@ export const getServerSideProps: GetServerSideProps = async () => {
       },
     };
 }
-
-// const getApi = async () =>{
-//     const res = await fetch('http://localhost:8080/api', { cache: 'force-cache' });
-//     const resText = await res.text();
-
-//     return resText;
-// }
