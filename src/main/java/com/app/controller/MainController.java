@@ -12,6 +12,7 @@ public class MainController {
 
     @GetMapping
     public String index() {
+        System.out.println("Hello, Spring");
         return "Hello, Spring!";
     }
 

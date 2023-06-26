@@ -1,12 +1,12 @@
-import { GetServerSideProps } from "next";
+import { GetServerSideProps } from 'next';
 
-export default function Page({initialData}) {
-
-    return <div>Hello, Next.js!
+export default function Page({ initialData }) {
+    return (
         <div>
-          {initialData}
+            Hello, Next.js!
+            <div>{initialData}</div>
         </div>
-    </div>
+    );
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -15,8 +15,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
     const initialData = await response.text();
 
     return {
-      props: {
-        initialData,
-      },
+        props: {
+            initialData,
+        },
     };
-}
+};
