@@ -1,17 +1,17 @@
 package com.app.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.app.enumList.MessageTypeEnum;
+
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ChatMessage {
     private String chatRoomId;
     private String writer;
     private String message;
-    private MessageType type;
+    private MessageTypeEnum type;
 }
