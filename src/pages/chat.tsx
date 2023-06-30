@@ -3,7 +3,8 @@ import { KeyboardEventHandler, useEffect, useState } from 'react';
 import SockJS from 'sockjs-client';
 
 export default function Page() {
-    const [client, setSocket] = useState<Client | null>(null);
+    const [client, setClient] = useState<Client>();
+    const [clientState, setClientState] = useState<string>('init');
     const [message, setMessage] = useState('');
     const [chatLog, setChatLog] = useState<message[]>([]);
     const openSocket = () => {
@@ -20,20 +21,23 @@ export default function Page() {
             onStompError: function (e) {
                 console.log(e);
             },
-            reconnectDelay: 5000,
+            onConnect: (e) => {
+                stompClient.subscribe('/subscribe/chat/room/1', (data) => {
+                    const content = JSON.parse(data.body);
+                    setChatLog((chatLog) => [...chatLog, content]);
+                });
+                stompClient.publish({
+                    destination: '/publish/chat/join',
+                    body: JSON.stringify({ chatRoomId: 1, writer: '익명' }),
+                });
+            },
+            onDisconnect: (e) => {
+                console.log('disConnected');
+            },
+            reconnectDelay: 0,
         });
-        stompClient.onConnect = (e) => {
-            stompClient.subscribe('/subscribe/chat/room/1', (data) => {
-                const content = JSON.parse(data.body);
-                setChatLog((chatLog) => [...chatLog, content]);
-            });
-            stompClient.publish({
-                destination: '/publish/chat/join',
-                body: JSON.stringify({ chatRoomId: 1, writer: '익명' }),
-            });
-        };
         stompClient.activate();
-        setSocket(stompClient);
+        setClient(stompClient);
     };
     const closeSocket = () => {
         client?.deactivate();
@@ -41,8 +45,15 @@ export default function Page() {
 
     useEffect(() => {
         if (client) {
+            if (client.connected) {
+                setClientState('connected');
+            } else {
+                setClientState('disconnected');
+            }
+        } else {
+            setClientState('init');
         }
-    }, [client]);
+    }, [client?.connected, client?.state]);
 
     const sendMessage = () => {
         if (client && message) {
@@ -68,13 +79,22 @@ export default function Page() {
                 ))}
             </div>
             <div>
-                {!client ? (
-                    <div>
-                        <button onClick={openSocket}>openSocket</button>
-                    </div>
-                ) : (
-                    <div>you're in connection</div>
-                )}
+                {
+                    {
+                        connected: <div>you're in connection</div>,
+                        disconnected: (
+                            <div>
+                                <div>you're disconnected</div>
+                                <button onClick={openSocket}>reopenSocket</button>
+                            </div>
+                        ),
+                        init: (
+                            <div>
+                                <button onClick={openSocket}>openSocket</button>
+                            </div>
+                        ),
+                    }[clientState]
+                }
             </div>
             <input
                 type="text"

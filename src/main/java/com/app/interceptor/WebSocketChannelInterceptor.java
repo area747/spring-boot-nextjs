@@ -18,9 +18,11 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
         System.out.println("message:" + message);
         System.out.println("헤더 : " + message.getHeaders());
         System.out.println("토큰" + accessor.getNativeHeader("Authorization"));
-        // if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-        //     jwtTokenProvider.validateToken(Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7));
+
+        // if (message.getHeaders().get("stompCommand").toString().equals("SUBSCRIBE")) {
+        //     throw new IllegalArgumentException("123");
         // }
+
         return message;
     }
 }
