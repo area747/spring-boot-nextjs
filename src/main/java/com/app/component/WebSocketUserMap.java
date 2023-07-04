@@ -38,4 +38,11 @@ public class WebSocketUserMap {
             }
         }
     }
+
+    public boolean hasUser(WebSocketUserDTO user) {
+        if (webSocketUserMap.containsKey(user.getIp())) {
+            return true;
+        }
+        return false;
+    }
 }
