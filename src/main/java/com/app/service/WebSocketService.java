@@ -1,10 +1,12 @@
 package com.app.service;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
 
@@ -23,6 +25,7 @@ public class WebSocketService {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         String ip = getIpAddress(accessor);
         String sessionId = accessor.getSessionId();
+        // Principal principal = (Principal) accessor.getSessionAttributes().get("principal");
         WebSocketUserDTO webSocketUser = WebSocketUserDTO.builder().ip(ip).sessionId(sessionId).build();
 
         return webSocketUser;
@@ -34,6 +37,12 @@ public class WebSocketService {
 
     public void removeSocketUser(WebSocketUserDTO webSocketUser) {
         webSocketUserMap.removeUser(webSocketUser);
+    }
+
+    public boolean hasRoomAuth(Authentication authentication, String id) {
+        System.out.println("getPrincipal ::: " + authentication.getPrincipal());
+        System.out.println("roomId ::: " + id);
+        return true;
     }
 
     private String getIpAddress(SimpMessageHeaderAccessor accessor) {

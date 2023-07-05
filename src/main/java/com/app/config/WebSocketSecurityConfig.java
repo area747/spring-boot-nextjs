@@ -13,6 +13,7 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
                 .nullDestMatcher().permitAll()
                 // .anyMessage().permitAll()
                 .simpDestMatchers("/publish/**").permitAll()
+                .simpSubscribeDestMatchers("/subscribe/chat/room/{roomId}").access("@webSocketService.hasRoomAuth(authentication, #roomId)")
                 .simpSubscribeDestMatchers("/subscribe/**").permitAll()
                 // .anyMessage().denyAll()
                 ;

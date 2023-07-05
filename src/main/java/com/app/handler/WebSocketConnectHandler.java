@@ -18,6 +18,7 @@ public class WebSocketConnectHandler {
     @EventListener
     public void handleWebSocketConnect(SessionConnectEvent event) {
         WebSocketUserDTO socketUser = service.makeWebSocketUserFromSocketEvent(event);
+        System.out.println("getUser ::: " + event.getUser());;
         service.addSocketUser(socketUser);
     }
 }

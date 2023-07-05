@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import com.app.dto.ChatMessage;
 import com.app.dto.WebSocketUserDTO;
-import com.app.service.WebSocketService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 public class WebSocketUserMap {
     private Map<String, WebSocketUserDTO> webSocketUserMap = new HashMap<String, WebSocketUserDTO>();
     private Map<String, List<String>> webSocketUserSessionListMap = new HashMap<String, List<String>>();
-    private final SimpMessagingTemplate template;
 
     public void addUser(WebSocketUserDTO user) {
         if (webSocketUserMap.containsKey(user.getIp())) {
