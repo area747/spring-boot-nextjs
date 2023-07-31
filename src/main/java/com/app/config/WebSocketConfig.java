@@ -10,9 +10,6 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.app.interceptor.IpHandshakeInterceptor;
-import com.app.interceptor.WebSocketChannelInterceptor;
-
 import lombok.RequiredArgsConstructor;
 
 
@@ -21,15 +18,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final IpHandshakeInterceptor ipHandshakeInterceptor;
-    private final WebSocketChannelInterceptor channelInterceptor;
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         System.out.println("registerStompEndpoints");
         registry.addEndpoint("/socket")
         .setAllowedOrigins("http://localhost:3000/")
-        .addInterceptors(ipHandshakeInterceptor)
         .withSockJS();
     }
 
@@ -39,8 +32,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/subscribe");
     }
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration){
-        registration.interceptors(channelInterceptor);
-    }
+    // @Override
+    // public void configureClientInboundChannel(ChannelRegistration registration){
+    //     registration.interceptors(channelInterceptor);
+    // }
 }
