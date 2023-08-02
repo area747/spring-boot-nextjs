@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.app.dataMapper.FileRepository;
+import com.app.dto.FileDTO;
 import com.app.entity.FileEntity;
+import com.app.repository.FileRepository;
+import com.app.service.FileService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MainController {
 
-    private final FileRepository fileRepository;
+    private final FileService fileService;
 
     @GetMapping
     public String index() {
@@ -39,24 +42,24 @@ public class MainController {
 
     @RequestMapping(value="/data",method=RequestMethod.POST)
     public String data(MultipartHttpServletRequest request) throws IllegalStateException, IOException {
-        String path = "F:/upload/";
         List<MultipartFile> files = request.getFiles("files");
 
-
-        for (MultipartFile file : files) {
-            System.out.println("fileName ::: "+ file.getOriginalFilename());
-            String saveFolder = path + file.getOriginalFilename();
-            File folder = new File(saveFolder);
-            FileEntity fileEntity = FileEntity.builder().fileName(file.getOriginalFilename()).path(saveFolder).build();
-            fileRepository.save(fileEntity);
-            file.transferTo(folder);
-        }
+        fileService.saveFiles(files);
 
         return "success";
     }
 
     @RequestMapping(value="/data",method=RequestMethod.GET)
-    public String getData(MultipartHttpServletRequest request) throws IllegalStateException, IOException {
-        return "hi";
+    public List<FileDTO> getData() throws IllegalStateException, IOException {
+        List<FileDTO> fileList = fileService.getFiles();
+
+        return fileList;
+    }
+
+    @RequestMapping(value="/data",method=RequestMethod.DELETE)
+    public String removeData(@RequestBody @Valid FileDTO fileDto) throws IllegalStateException, IOException {
+        fileService.removeFiles(fileDto);
+
+        return "sueccess";
     }
 }
