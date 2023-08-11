@@ -1,5 +1,7 @@
 package com.app.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileDTO {
-    private Long id;
+    private String id;
     private String fileName;
-    private String path;
+    private String extension;
+    private LocalDateTime inDate;
 }
