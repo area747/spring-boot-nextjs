@@ -1,8 +1,10 @@
-.primary-btn {
+.btn {
     height: 45px;
     padding: 12px;
-    border: 1px solid #eee;
+    border: 1px solid #BEC9D4;
+    background: #FFFFFF;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .primary-btn:hover {

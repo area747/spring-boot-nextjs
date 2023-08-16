@@ -1,5 +1,14 @@
 import { GetServerSideProps } from 'next';
-import { DragEvent, DragEventHandler, MouseEvent, MouseEventHandler, useEffect, useState } from 'react';
+import {
+    DragEvent,
+    DragEventHandler,
+    FormEvent,
+    FormEventHandler,
+    MouseEvent,
+    MouseEventHandler,
+    useEffect,
+    useState,
+} from 'react';
 
 export default function Page({ initialData }) {
     const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -23,21 +32,32 @@ export default function Page({ initialData }) {
     const onDropEvent: DragEventHandler<HTMLDivElement> = async (event: DragEvent) => {
         event.stopPropagation();
         event.preventDefault();
-
-        function readFile(file: File): Promise<ArrayBuffer> {
-            return new Promise((resolve, reject) => {
-                const fileReader = new FileReader();
-                fileReader.readAsArrayBuffer(file);
-                fileReader.onload = () => {
-                    if (fileReader.result instanceof ArrayBuffer) {
-                        resolve(fileReader.result);
-                    }
-                };
-                fileReader.onerror = reject;
-            });
-        }
         const files = event.dataTransfer.files;
-        const items = event.dataTransfer.items;
+        sendFormData(files);
+        setIsDragging(false);
+    };
+
+    const onDragOver: DragEventHandler<HTMLDivElement> = (event: DragEvent) => {
+        event.preventDefault();
+        setIsDragging(true);
+    };
+
+    const onDragLeaveEvent: DragEventHandler<HTMLDivElement> = (event: DragEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const onInputEventHandler: FormEventHandler<HTMLInputElement> = (event: FormEvent<HTMLInputElement>) => {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.currentTarget.files) {
+            sendFormData(event.currentTarget.files);
+            event.currentTarget.value = '';
+        }
+    };
+
+    const sendFormData = (files: FileList) => {
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             formData.append('files', files[i], files[i].name);
@@ -52,18 +72,6 @@ export default function Page({ initialData }) {
                 loadFileList();
             }
         };
-        setIsDragging(false);
-    };
-
-    const onDragOver: DragEventHandler<HTMLDivElement> = (event: DragEvent) => {
-        event.preventDefault();
-        setIsDragging(true);
-    };
-
-    const onDragLeaveEvent: DragEventHandler<HTMLDivElement> = (event: DragEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
-        setIsDragging(false);
     };
 
     const deleteBtn = async (item) => {
@@ -93,7 +101,10 @@ export default function Page({ initialData }) {
                     boxSizing: 'border-box',
                 }}
             >
-                <button className="primary-btn">Upload</button>
+                <label className="btn primary-btn" style={{ fontSize: 13 }} htmlFor="uploadFile">
+                    Upload
+                </label>
+                <input id="uploadFile" onInput={onInputEventHandler} type={'file'} multiple hidden></input>
             </div>
             <div
                 style={{
@@ -133,20 +144,27 @@ export default function Page({ initialData }) {
                                 }}
                             >
                                 <div className="image-box">
-                                    <div style={{ width: '100%', height: 'calc(100% - 24px)', overflow: 'hidden' }}>
-                                        <img
-                                            style={{ maxWidth: '100%', height: 'auto' }}
-                                            src={`http://127.0.0.1:8080/image/${item.id}.${item.extension}`}
-                                        ></img>
-                                    </div>
                                     <div
-                                        style={{ width: '100%', height: 24, overflow: 'hidden' }}
-                                        onClick={() => {
+                                        style={{ position: 'absolute', right: 12, padding: '0px 2px' }}
+                                        onClick={(event: MouseEvent) => {
+                                            event.stopPropagation();
+                                            event.preventDefault();
                                             deleteBtn(item);
                                         }}
                                     >
-                                        {item.fileName}
+                                        X
                                     </div>
+                                    <div style={{ width: '100%', height: 'calc(100% - 24px)', overflow: 'hidden' }}>
+                                        <img
+                                            style={{ maxWidth: '100%', height: 'auto' }}
+                                            src={
+                                                ['png', 'jpg'].includes(item.extension)
+                                                    ? `http://127.0.0.1:8080/upload/${item.id}.${item.extension}`
+                                                    : `http://127.0.0.1:8080/image/file_image.png`
+                                            }
+                                        ></img>
+                                    </div>
+                                    <div style={{ width: '100%', height: 24, overflow: 'hidden' }}>{item.fileName}</div>
                                 </div>
                             </div>
                         );
